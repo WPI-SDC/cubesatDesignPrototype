@@ -11,8 +11,8 @@ def main():
     setup(motor1, motor2, motor3, motor4)
     print("setup done")
     print("testing motor output")
-    writeMotor(motor1, 500)
-    writeMotor(motor2, 500)
+    writeMotor(motor1, 700)
+    writeMotor(motor2, 700)
     wiringpi.softPwmWrite(motor3, 50)
     wiringpi.softPwmWrite(motor4, 50)
     #writeMotorSoft(motor3, 50)
@@ -27,13 +27,16 @@ def setup(motor1, motor2, motor3, motor4):
 
     wiringpi.pinMode(motor3, 1)
     wiringpi.pinMode(motor4, 1)
+
+    wiringpi.pwmSetMode(wiringpi.PWM_MODE_MS)
+    
     wiringpi.softPwmCreate(motor3, 0, 100)
     wiringpi.softPwmCreate(motor4, 0, 100)
 
     wiringpi.pwmWrite(motor1, 0)
     wiringpi.pwmWrite(motor2, 0)
-    wiringpi.softPwmWrite(motor3, 50)
-    wiringpi.softPwmWrite(motor4, 50)
+    wiringpi.softPwmWrite(motor3, 100)
+    wiringpi.softPwmWrite(motor4, 100)
 
 def writeMotor(motor, output):
 
