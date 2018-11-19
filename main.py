@@ -2,20 +2,25 @@ import wiringpi
 import time
 
 def main():
-    motor1 = 1 # 0-1023
-    motor2 = 24 # 0-1023
-    motor3 = 4 # 0-100
-    motor4 = 5 # 0-100
+    # 0 - 1 range
+    motor1 = 1
+    motor2 = 24
+    motor3 = 4
+    motor4 = 5
 
     wiringpi.wiringPiSetup()
     setup(motor1, motor2, motor3, motor4)
     print("setup done")
     print("testing motor output")
-    writeMotor(motor1, 700)
-    writeMotor(motor2, 700)
-    wiringpi.softPwmWrite(motor3, 50)
-    wiringpi.softPwmWrite(motor4, 50)
-    #writeMotorSoft(motor3, 50)
+
+    try:
+        while(1):
+            writeMotor(motor1, 0.68)
+            writeMotor(motor2, 0.68)
+            writeMotorSoft(motor3, 0.68)
+            writeMotorSoft(motor4, 0.68)
+    except KeyboardInterrupt:
+        print("exiting")
 
 def setup(motor1, motor2, motor3, motor4):
 
@@ -40,13 +45,17 @@ def setup(motor1, motor2, motor3, motor4):
 
 def writeMotor(motor, output):
 
+    output = output * 1023
+    
     if (output >= 0) and (output <= 1023):
-        wiringpi.pwmWrite(motor, output)
+        wiringpi.pwmWrite(motor, int(output))
 
 def writeMotorSoft(motor, output):
 
+    output = output * 100
+    
     if (output >= 0) and (output <= 100):
-        wiringpi.softPwmWrite(motor, output)
+        wiringpi.softPwmWrite(motor, int(output))
 
 
 if __name__ == "__main__":
