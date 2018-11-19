@@ -16,7 +16,7 @@ def main():
     try:
         while(1):
             writeMotor(motor1, 0.68)
-            writeMotor(motor2, 0.68)
+            writeMotor(motor2, 0.5)
             writeMotorSoft(motor3, 0.68)
             writeMotorSoft(motor4, 0.68)
     except KeyboardInterrupt:
@@ -34,6 +34,8 @@ def setup(motor1, motor2, motor3, motor4):
     wiringpi.pinMode(motor4, 1)
 
     wiringpi.pwmSetMode(wiringpi.PWM_MODE_MS)
+    wiringpi.pwmSetClock(2)
+    wiringpi.pwmSetRange(1000)
     
     wiringpi.softPwmCreate(motor3, 0, 100)
     wiringpi.softPwmCreate(motor4, 0, 100)
