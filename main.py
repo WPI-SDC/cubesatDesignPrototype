@@ -8,21 +8,30 @@ def main():
     motor3 = 4
     motor4 = 5
 
+    motor1dir = 21
+    motor2dir = 22
+    motor3dir = 23
+    motor4dir = 25
+
     wiringpi.wiringPiSetup()
-    setup(motor1, motor2, motor3, motor4)
+    setupPWM(motor1, motor2, motor3, motor4)
+    setupDir(motor1dir, motor2dir, motor3dir, motor4dir)
     print("setup done")
     print("testing motor output")
-
+    speed = 0.6
+    print("Running at speed: " + str(speed))
     try:
         while(1):
-            writeMotor(motor1, 0.68)
-            writeMotor(motor2, 0.5)
-            writeMotorSoft(motor3, 0.68)
-            writeMotorSoft(motor4, 0.68)
+            writeMotor(motor1, speed, motor1dir, 1)
+            writeMotor(motor2, speed, motor2dir, 1)
+            writeMotorSoft(motor3, speed, motor3dir, 1)
+            writeMotorSoft(motor4, speed, motor4dir, 1)
     except KeyboardInterrupt:
-        print("exiting")
+        writeMotor(motor1, 1.0, motor1dir, 1)
+        writeMotor(motor2, 1.0, motor2dir, 1)
+        print("\nterminating")
 
-def setup(motor1, motor2, motor3, motor4):
+def setupPWM(motor1, motor2, motor3, motor4):
 
     # setup wiringpi and pwm outputs
     wiringpi.wiringPiSetup()
@@ -45,19 +54,39 @@ def setup(motor1, motor2, motor3, motor4):
     wiringpi.softPwmWrite(motor3, 100)
     wiringpi.softPwmWrite(motor4, 100)
 
-def writeMotor(motor, output):
+def setupDir(motor1dir, motor2dir, motor3dir, motor4dir):
+    wiringpi.pinMode(motor1dir, 1)
+    wiringpi.pinMode(motor2dir, 1)
+    wiringpi.pinMode(motor3dir, 1)
+    wiringpi.pinMode(motor4dir, 1)
+
+def writeMotor(motor, output, motorDir, outputDir):
 
     output = output * 1023
     
     if (output >= 0) and (output <= 1023):
         wiringpi.pwmWrite(motor, int(output))
+        if(outputDir == 1):
+            pass
+            #wiringpi.digitalWrite(motorDir, 1)
+        elif(outputDir == -1):
+            pass
+            #wiringpi.digitalWrite(motorDir, 0)
+        else:
+            print("incorrect direction inputted")
 
-def writeMotorSoft(motor, output):
+def writeMotorSoft(motor, output, motorDir, outputDir):
 
     output = output * 100
     
     if (output >= 0) and (output <= 100):
         wiringpi.softPwmWrite(motor, int(output))
+        if(outputDir == 1):
+            pass
+            #wiringpi.digitalWrite(motorDir, 1)
+        elif(outputDir == -1):
+            pass
+            #wiringpi.digitalWrite(motorDir, 0)
 
 
 if __name__ == "__main__":
