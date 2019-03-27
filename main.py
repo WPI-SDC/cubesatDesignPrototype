@@ -1,6 +1,9 @@
 import wiringpi
 import time
 import sys
+import smbus
+
+DEVICE_ADDRESS = 0x68
 
 def main():
     if len(sys.argv) < 5:
@@ -29,6 +32,7 @@ def main():
     motor42 = 25
 
     wiringpi.wiringPiSetup()
+    bus = smbus.SMBus(1)
     setupPWM(motor11, motor12, motor21, motor22, motor31, motor32, motor41, motor42)
     #setupDir(motor1dir, motor2dir, motor3dir, motor4dir)
     print("setup done")
@@ -39,8 +43,15 @@ def main():
             writeMotorSoft(motor31,motor32, float(sys.argv[2]))
             writeMotorSoft(motor41,motor42, float(sys.argv[3]))
             writeMotorSoft(motor11,motor12, float(sys.argv[4]))
+            #print("z: %5d" % (getZaxis(bus)))
+            print("x: %5d, y: %5d, z: %5d" % (getXaxis(bus), getYaxis(bus), getZaxis(bus)))
+            # print("gyro x: " + str(getXaxis(bus)) + " y: " + str(getYaxis(bus)) + " z: " + str(getZaxis(bus)))
             
     except KeyboardInterrupt:
+        writeMotorSoft(motor21,motor22, 0)
+        writeMotorSoft(motor31,motor32, 0)
+        writeMotorSoft(motor41,motor42, 0)
+        writeMotorSoft(motor11,motor12, 0)
         print("\nterminating")
 
 def setupPWM(motor11, motor12, motor21, motor22, motor31, motor32, motor41, motor42):
@@ -95,6 +106,30 @@ def writeMotorSoft(motorOut1, motorOut2, output):
         elif(outputDir == -1):
             wiringpi.softPwmWrite(motorOut1, 0) # stop first motor
             wiringpi.softPwmWrite(motorOut2, int(output))
+
+def getXaxis(bus):
+    high = bus.read_byte_data(DEVICE_ADDRESS,0x43)
+    low = bus.read_byte_data(DEVICE_ADDRESS,0x44)
+
+    returnedData = (high * 256 + low) * 131
+    return returnedData
+    #return (returnedData - 65536) if (returnedData > 32767) else returnedData
+
+def getYaxis(bus):
+    high = bus.read_byte_data(DEVICE_ADDRESS,0x45)
+    low = bus.read_byte_data(DEVICE_ADDRESS,0x46)
+
+    returnedData = (high * 256 + low) * 131
+    return returnedData
+    #return (returnedData - 65536) if (returnedData > 32767) else returnedData
+
+def getZaxis(bus):
+    high = bus.read_byte_data(DEVICE_ADDRESS,0x47)
+    low = bus.read_byte_data(DEVICE_ADDRESS,0x48)
+
+    returnedData = (high * 256 + low) * 131
+    return returnedData
+    # return (returnedData - 65536) if (returnedData > 32767) else returnedData
 
 
 if __name__ == "__main__":
